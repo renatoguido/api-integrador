@@ -1,13 +1,13 @@
 const { Request, Response } = require("express");
-const Order = require("../models/order");
+const Order = require("../models/orders");
 
 const orderController = {
     getAll: async (req, res) => {
         try {
             const getAllOrder = await Order.findAll();
-            res.json(getAllOrder);
+            res.status(200).json(getAllOrder);
         } catch (error) {
-            console(error);
+            console.log(error);
             res.status(500).json({ message: "Pedido não encontrado" });
         }
     },
@@ -31,17 +31,24 @@ const orderController = {
 
     createOrder: async (req, res) => {
         try {
-            const { nome, cpf, contato, servico, horarioPreferencial, status } = req.body;
+            const { nome_completo, cpf, telcontato, email, cep, numerocasa,logradouro, bairro, localidade, uf, plan, time, status } = req.body;
             console.log(req.body);
 
-            const newOrder = await Order.create({
-                nome,
-                cpf,
-                contato,
-                servico,
-                horarioPreferencial,
-                status
-            })
+            const newOrder = await Order.create(
+                {
+                    nome_completo: nome_completo,
+                    cpf: cpf,
+                    telcontato: telcontato,
+                    email: email,
+                    cep: cep,
+                    numerocasa: numerocasa,
+                    logradouro: logradouro,
+                    bairro: bairro,
+                    localidade: localidade,
+                    uf: uf,
+                    plan: plan,
+                    time: time,
+                })
 
             res.status(201).json(newOrder)
         } catch (error) {
@@ -51,22 +58,52 @@ const orderController = {
 
     updateOrder: async (req, res) => {
         try {
+            const id = req.params.id; // Pegue o 'id' da URL
+            const {
+                nome_completo,
+                cpf,
+                telcontato,
+                email,
+                cep,
+                numerocasa,
+                logradouro,
+                bairro,
+                localidade,
+                uf,
+                plan,
+                time,
+                status
+            } = req.body;
+    
             const [updateRows] = await Order.update(
                 {
-                    nome,
+                    nome_completo,
                     cpf,
-                    contato,
-                    servico,
-                    horarioPreferencial,
+                    telcontato,
+                    email,
+                    cep,
+                    numerocasa,
+                    logradouro,
+                    bairro,
+                    localidade,
+                    uf,
+                    plan,
+                    time,
                     status
                 },
                 {
-                    where: id
+                    where: { id: id } // Especifique o ID do pedido a ser atualizado
                 }
-            )
-
-        } catch (error) { 
-            res.status(500).json({ error: error.message })
+            );
+    
+            if (updateRows === 1) {
+                res.status(200).json({ message: "Pedido atualizado com sucesso" });
+            } else {
+                res.status(400).json({ error: "Pedido não encontrado" });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: error.message });
         }
     }
 }

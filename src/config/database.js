@@ -11,7 +11,7 @@ const dB_HOST = process.env.DB_HOST;
 
   const db = new Sequelize(dB_NAME, dB_USER, dB_PASS,{
     dialect:"mysql",
-    host:dB_HOST,
+    host: dB_HOST,
   });
 
 async function hasConnection(){
